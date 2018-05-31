@@ -24,7 +24,7 @@ public class GenerateHooksMojo extends AbstractMojo {
     private File outputDirectory;
 
     public void execute() throws MojoExecutionException {
-        File packageJson = new File(workingDirectory, "package.json");
+        /*File packageJson = new File(workingDirectory, "package.json");
         System.out.println("Fetching it");
         File f = outputDirectory;
 
@@ -50,10 +50,6 @@ public class GenerateHooksMojo extends AbstractMojo {
                 }
             }
         }
-    }
-
-    /** check to see if overridden via `-D`, otherwise fallback to pom value */
-    private String getRegistryUrl() {
-        return System.getProperty(NPM_REGISTRY_URL, this.npmRegistryURL);
+        */
     }
 }

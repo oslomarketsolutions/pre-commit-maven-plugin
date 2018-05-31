@@ -38,7 +38,8 @@ public class DownloadBinaryMojo extends AbstractPrecommitMojo {
     private boolean skip;
 
     public void execute() throws MojoExecutionException {
-        File packageJson = new File(this.workingDirectory, "package.json");
+        BinaryInstaller
+        /*File packageJson = new File(this.workingDirectory, "package.json");
         System.out.println("Fetching it");
         File f = outputDirectory;
 
@@ -64,10 +65,6 @@ public class DownloadBinaryMojo extends AbstractPrecommitMojo {
                 }
             }
         }
-    }
-
-    /** check to see if overridden via `-D`, otherwise fallback to pom value */
-    private String getRegistryUrl() {
-        return System.getProperty(NPM_REGISTRY_URL, this.npmRegistryURL);
+        */
     }
 }
