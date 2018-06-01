@@ -38,6 +38,10 @@ Remember to replace `LATEST_VERSION` with the version of the plugin you
 would like to use, i.e. [the latest version][releases]. This will
 register the plugin
 
+### Options
+
+> TODO
+
 ### Skipping execution
 
 If you need to skip parts of the plugin, you may do so using the
@@ -47,6 +51,14 @@ following system properties:
 |--------|--------------------------|
 |download| -Dskip.downloadprecommit |
 |install | -Dskip.installprecommit  |
+
+### Gitignore
+
+After running the plugin, you will see a `precommit_files` directory in
+your project. This is where the plugin stores the pre-commit files so
+that they can be executed when generating the Git hooks.
+
+You probably want to add this directory to your gitignore.
 
 [precommit]: https://pre-commit.com
 [setup]: https://pre-commit.com/#plugins
