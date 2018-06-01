@@ -1,5 +1,6 @@
 package no.oms.maven.precommit.lib;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,7 +8,7 @@ import java.io.File;
 import java.io.IOException;
 
 final class PythonException extends Exception {
-    public PythonException(String message){
+    PythonException(String message){
         super(message);
     }
     PythonException(String message, Throwable cause) {
@@ -19,6 +20,7 @@ final class PythonException extends Exception {
 interface PythonHandle {
     VirtualEnvDescriptor setupVirtualEnv(File directory, String envName) throws PythonException;
     void installIntoVirtualEnv(VirtualEnvDescriptor env, File setupFile) throws PythonException;
+    void installGitHooks(VirtualEnvDescriptor env) throws PythonException;
 }
 
 final class VirtualEnvDescriptor {
@@ -39,14 +41,24 @@ final class DefaultPythonHandle implements PythonHandle {
         LOGGER.info("About to setup virtual env {}", envName);
 
         VirtualEnvDescriptor env = new VirtualEnvDescriptor(directory, envName);
+
+        if (env.directory.exists()) {
+            LOGGER.info("Virtual env already exists, skipping");
+            return env;
+        }
+
         String[] command = new String[]{ "python", "-m", "venv", env.directory.getAbsolutePath() };
+        LOGGER.debug("Running {}", (Object) command);
 
         try {
             Process child = Runtime.getRuntime().exec(command);
             int result = child.waitFor();
+            String stdout = IOUtils.toString(child.getInputStream());
+
             if (result != 0) {
                 throw new PythonException(
-                        "Could not create virtual env " + env.directory.getAbsolutePath() + ". return code " + result
+                        "Could not create virtual env " + env.directory.getAbsolutePath() + ". return code " + result +
+                                "\nPython said: " + stdout
                 );
             }
         } catch (IOException e) {
@@ -63,7 +75,7 @@ final class DefaultPythonHandle implements PythonHandle {
         LOGGER.info("About to install binary into virtual env {}", env.name);
 
         if (!env.directory.exists()) {
-            throw new PythonException("VirtualEnvDescriptor " + env.name + " does not exist");
+            throw new PythonException("Virtual env " + env.name + " does not exist");
         }
 
         String[] command = new String[]{
@@ -72,13 +84,17 @@ final class DefaultPythonHandle implements PythonHandle {
                 "install"
         };
         String[] environment = new String[]{ "VIRTUAL_ENV=" + env.directory.getAbsolutePath() };
+        LOGGER.debug("Running {} {} in {}", environment, command, setupFile.getParentFile());
 
         try {
             Process child = Runtime.getRuntime().exec(command, environment, setupFile.getParentFile());
             int result = child.waitFor();
+            String stdout = IOUtils.toString(child.getInputStream());
+
             if (result != 0) {
                 throw new PythonException(
-                        "Failed to install into virtual env " + env.name + ". return code " + result
+                        "Failed to install into virtual env " + env.name + ". return code " + result +
+                                "\nPython said: " + stdout
                 );
             }
         } catch (IOException e) {
@@ -88,5 +104,45 @@ final class DefaultPythonHandle implements PythonHandle {
         }
 
         LOGGER.info("Successfully installed into {}", env.name);
+    }
+
+    @Override
+    public void installGitHooks(VirtualEnvDescriptor env) throws PythonException {
+        LOGGER.info("About to install commit hooks into virtual env {}", env.name);
+
+        if (!env.directory.exists()) {
+            throw new PythonException("Virtual env " + env.name + " does not exist");
+        }
+
+        String[] command = new String[]{
+                env.directory.getAbsolutePath() + "/bin/pre-commit",
+                "install",
+                "--install-hooks"
+        };
+        String[] environment = new String[]{
+                "VIRTUAL_ENV=" + env.directory.getAbsolutePath(),
+                // PATH is not inherited when we explicitly set environment.
+                // Set it to retain access to the git binary
+                "PATH=" + System.getenv("PATH")
+        };
+        LOGGER.debug("Running {} {}", environment, command);
+
+        try {
+            Process child = Runtime.getRuntime().exec(command, environment);
+            int result = child.waitFor();
+            String stdout = IOUtils.toString(child.getInputStream());
+
+            if (result != 0) {
+                throw new PythonException(
+                        "Failed to install git hooks. return code " + result + "\nPre-commit said: " + stdout
+                );
+            }
+        } catch (IOException e) {
+            throw new PythonException("Failed to execute python", e);
+        } catch (InterruptedException e) {
+            throw new PythonException("Unexpected interruption of while waiting for the pre-commit binary", e);
+        }
+
+        LOGGER.info("Successfully installed Git commit hooks");
     }
 }

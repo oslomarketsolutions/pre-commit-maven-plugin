@@ -10,7 +10,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 /**
- * Goal which touches a timestamp file.
+ * Goal which downloads and prepares a pre-commit binary for use later
  */
 @Mojo(name = "download-binary", defaultPhase = LifecyclePhase.INITIALIZE)
 public class DownloadBinaryMojo extends AbstractPrecommitMojo {
@@ -31,7 +31,7 @@ public class DownloadBinaryMojo extends AbstractPrecommitMojo {
     /**
      * Skips execution of this mojo.
      */
-    @Parameter(property = "skip.installprecommit", alias = "skip.installprecommit", defaultValue = "${skip.installprecommit}")
+    @Parameter(property = "skip.downloadprecommit", alias = "skip.downloadprecommit", defaultValue = "${skip.downloadprecommit}")
     private boolean skip;
 
     @Override

@@ -24,19 +24,13 @@ public final class PluginFactory {
         return new BinaryInstaller(getInstallConfig(), new DefaultArchiveExtractor(), new DefaultFileDownloader(), new DefaultPythonHandle());
     }
 
-    /*public YarnRunner getYarnRunner(ProxyConfig proxy, String npmRegistryURL) {
-        return new DefaultYarnRunner(new InstallYarnExecutorConfig(getInstallConfig()), proxy, npmRegistryURL);
+    public BinaryRunner getBinaryRunner() {
+        return new BinaryRunner(getInstallConfig(), new DefaultPythonHandle());
     }
-
-    private NodeExecutorConfig getExecutorConfig() {
-                                                 return new InstallNodeExecutorConfig(getInstallConfig());
-                                                                                                          }
-    */
 
     private InstallConfig getInstallConfig() {
         return new DefaultInstallConfig(installDirectory, workingDirectory, cacheResolver);
     }
-
 
     private static final CacheResolver getDefaultCacheResolver(File root) {
         return new DirectoryCacheResolver(new File(root, DEFAULT_CACHE_PATH));
