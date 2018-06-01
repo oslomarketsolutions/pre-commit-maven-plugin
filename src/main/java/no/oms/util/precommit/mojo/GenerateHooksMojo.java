@@ -1,4 +1,4 @@
-package com.manamind.util.precommit.mojo;
+package no.oms.util.precommit.mojo;
 
 
 import org.apache.maven.plugin.AbstractMojo;

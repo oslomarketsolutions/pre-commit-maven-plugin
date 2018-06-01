@@ -1,7 +1,8 @@
-package com.manamind.util.precommit.lib;
+package no.oms.util.precommit.lib;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,8 +25,8 @@ public class BinaryInstaller {
 
     private final PythonHandle pythonHandle;
 
-    public BinaryInstaller(Logger logger, InstallConfig config, ArchiveExtractor archiveExtractor, FileDownloader fileDownloader, PythonHandle pythonHandle) {
-        this.logger = logger;
+    public BinaryInstaller(InstallConfig config, ArchiveExtractor archiveExtractor, FileDownloader fileDownloader, PythonHandle pythonHandle) {
+        logger = LoggerFactory.getLogger(getClass());
         this.config = config;
         this.archiveExtractor = archiveExtractor;
         this.fileDownloader = fileDownloader;
@@ -38,7 +39,7 @@ public class BinaryInstaller {
             tar -xzf pre-commit-1.10.1.tar.gz --strip-components 1
             python setup.py install
          */
-    private void installBinary() throws InstallationException {
+    public void installBinary() throws InstallationException {
         try {
             logger.info("Installing pre-commit version {}", version);
 

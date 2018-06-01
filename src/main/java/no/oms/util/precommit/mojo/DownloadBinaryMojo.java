@@ -1,16 +1,13 @@
-package com.manamind.util.precommit.mojo;
+package no.oms.util.precommit.mojo;
 
 
-import com.manamind.util.precommit.lib.BinaryInstaller;
-import org.apache.maven.plugin.AbstractMojo;
+import no.oms.util.precommit.lib.BinaryInstaller;
+import no.oms.util.precommit.lib.InstallationException;
+import no.oms.util.precommit.lib.PluginFactory;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 
 /**
  * Goal which touches a timestamp file.
@@ -37,34 +34,17 @@ public class DownloadBinaryMojo extends AbstractPrecommitMojo {
     @Parameter(property = "skip.installprecommit", alias = "skip.installprecommit", defaultValue = "${skip.installprecommit}")
     private boolean skip;
 
-    public void execute() throws MojoExecutionException {
-        BinaryInstaller
-        /*File packageJson = new File(this.workingDirectory, "package.json");
-        System.out.println("Fetching it");
-        File f = outputDirectory;
-
-        if ( !f.exists() ) {
-            f.mkdirs();
-        }
-
-        File touch = new File( f, "touch.txt" );
-
-        FileWriter w = null;
+    @Override
+    public void execute(PluginFactory pluginFactory) throws MojoExecutionException {
         try {
-            w = new FileWriter( touch );
-
-            w.write( "touch.txt" );
-        } catch ( IOException e ) {
-            throw new MojoExecutionException( "Error creating file " + touch, e );
-        } finally {
-            if ( w != null ) {
-                try {
-                    w.close();
-                } catch ( IOException e ) {
-                    // ignore
-                }
-            }
+            pluginFactory.getBinaryInstaller().installBinary();
+        } catch (InstallationException e) {
+            throw new MojoExecutionException("Failed to install binary", e);
         }
-        */
+    }
+
+    @Override
+    protected boolean skipExecution() {
+        return skip;
     }
 }

@@ -1,4 +1,4 @@
-package com.manamind.util.precommit.lib;
+package no.oms.util.precommit.lib;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

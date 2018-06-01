@@ -1,4 +1,4 @@
-package com.manamind.util.precommit.lib;
+package no.oms.util.precommit.lib;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;

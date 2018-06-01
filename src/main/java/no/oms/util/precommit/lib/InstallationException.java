@@ -1,4 +1,4 @@
-package com.manamind.util.precommit.lib;
+package no.oms.util.precommit.lib;
 
 
 public final class InstallationException extends Exception {

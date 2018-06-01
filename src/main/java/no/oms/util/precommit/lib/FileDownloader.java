@@ -1,4 +1,4 @@
-package com.manamind.util.precommit.lib;
+package no.oms.util.precommit.lib;
 	
 import java.io.File;
 import java.io.FileOutputStream;
