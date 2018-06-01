@@ -1,7 +1,7 @@
-package no.oms.util.precommit;
+package no.oms.maven.precommit;
 
 
-import no.oms.util.precommit.mojo.DownloadBinaryMojo;
+import no.oms.maven.precommit.mojo.DownloadBinaryMojo;
 import org.apache.maven.plugin.testing.MojoRule;
 import org.apache.maven.plugin.testing.WithoutMojo;
 import org.junit.Ignore;

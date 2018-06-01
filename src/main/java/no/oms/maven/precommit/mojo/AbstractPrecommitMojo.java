@@ -1,10 +1,9 @@
-package no.oms.util.precommit.mojo;
+package no.oms.maven.precommit.mojo;
 
-import no.oms.util.precommit.lib.PluginFactory;
-import no.oms.util.precommit.lib.RepositoryCacheResolver;
+import no.oms.maven.precommit.lib.PluginFactory;
+import no.oms.maven.precommit.lib.RepositoryCacheResolver;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.eclipse.aether.RepositorySystemSession;
 

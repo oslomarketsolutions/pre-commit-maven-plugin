@@ -1,4 +1,4 @@
-package no.oms.util.precommit.mojo;
+package no.oms.maven.precommit.mojo;
 
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -9,8 +9,6 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 
 /**
  * Goal which touches a timestamp file.

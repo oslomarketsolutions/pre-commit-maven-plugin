@@ -1,4 +1,4 @@
-package no.oms.util.precommit.lib;
+package no.oms.maven.precommit.lib;
 
 
 public final class InstallationException extends Exception {

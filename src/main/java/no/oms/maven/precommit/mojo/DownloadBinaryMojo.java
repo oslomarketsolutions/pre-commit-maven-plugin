@@ -1,9 +1,9 @@
-package no.oms.util.precommit.mojo;
+package no.oms.maven.precommit.mojo;
 
 
-import no.oms.util.precommit.lib.BinaryInstaller;
-import no.oms.util.precommit.lib.InstallationException;
-import no.oms.util.precommit.lib.PluginFactory;
+import no.oms.maven.precommit.lib.BinaryInstaller;
+import no.oms.maven.precommit.lib.InstallationException;
+import no.oms.maven.precommit.lib.PluginFactory;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;

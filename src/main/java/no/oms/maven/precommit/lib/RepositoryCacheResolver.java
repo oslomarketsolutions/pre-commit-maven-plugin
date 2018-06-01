@@ -1,4 +1,4 @@
-package no.oms.util.precommit.lib;
+package no.oms.maven.precommit.lib;
 
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.DefaultArtifact;
@@ -10,7 +10,7 @@ import java.io.File;
 
 public class RepositoryCacheResolver implements CacheResolver {
 
-    private static final String GROUP_ID = "no.oms.util";
+    private static final String GROUP_ID = "no.oms.maven";
     private final RepositorySystemSession repositorySystemSession;
 
 

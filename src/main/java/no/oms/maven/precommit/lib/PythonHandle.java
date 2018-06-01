@@ -1,4 +1,4 @@
-package no.oms.util.precommit.lib;
+package no.oms.maven.precommit.lib;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,9 +17,8 @@ final class PythonException extends Exception {
 
 
 interface PythonHandle {
-    public VirtualEnvDescriptor setupVirtualEnv(File directory, String envName) throws PythonException;
-    public void activateVirtualEnv(VirtualEnvDescriptor env) throws PythonException;
-    public void installIntoVirtualEnv(VirtualEnvDescriptor env, File setupFile) throws PythonException;
+    VirtualEnvDescriptor setupVirtualEnv(File directory, String envName) throws PythonException;
+    void installIntoVirtualEnv(VirtualEnvDescriptor env, File setupFile) throws PythonException;
 }
 
 final class VirtualEnvDescriptor {
@@ -57,15 +56,6 @@ final class DefaultPythonHandle implements PythonHandle {
         }
 
         return env;
-    }
-
-    @Override
-    public void activateVirtualEnv(VirtualEnvDescriptor env) throws PythonException {
-        if (!env.directory.exists()) {
-            throw new PythonException("VirtualEnvDescriptor " + env.name + " does not exist");
-        }
-
-
     }
 
     @Override
