@@ -1,12 +1,12 @@
 # pre-commit-maven-plugin
 
-> The maven plugin for [the pre-commit framework][precommit]
+> A maven plugin for [the pre-commit framework][precommit]
 
 [pre-commit][precommit] is a framework for managing commit hooks in a
 Git repository. It makes working with commit hooks easier, but it has an
 issue. It requires that developers install a binary onto their system
-and manually install the hooks by running `pre-commit install
- --install-hooks`. We can do better than that!
+and manually installing the the hooks into their repo by running
+`pre-commit install --install-hooks`. We can do better than that!
 
 When compiling a maven project, this plugin will install the git hooks
 automatically in the developer's Git project. One less thing to
