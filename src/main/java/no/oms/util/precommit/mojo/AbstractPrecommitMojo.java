@@ -20,7 +20,7 @@ public abstract class AbstractPrecommitMojo extends AbstractMojo {
     /**
      * The base directory for installing the binary into
      */
-    @Parameter(defaultValue = "${basedir}/precommit", property = "installDirectory")
+    @Parameter(defaultValue = "${basedir}/precommit_files", property = "installDirectory")
     protected File installDirectory;
 
     @Parameter(defaultValue = "${repositorySystemSession}", readonly = true)

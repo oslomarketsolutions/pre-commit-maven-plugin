@@ -31,14 +31,11 @@ class ArchiveExtractionException extends Exception {
 }
 
 interface ArchiveExtractor {
-	public void extract(String archive, String destinationDirectory) throws ArchiveExtractionException;
+	void extract(String archive, String destinationDirectory) throws ArchiveExtractionException;
 }
 
 final class DefaultArchiveExtractor implements ArchiveExtractor {
-
-
 	private static final Logger LOG = LoggerFactory.getLogger(DefaultArchiveExtractor.class);
-
 
 	private void prepDestination(File path, boolean directory) throws IOException {
 		if (directory) {
@@ -47,7 +44,7 @@ final class DefaultArchiveExtractor implements ArchiveExtractor {
 			if (!path.getParentFile().exists()) {
 				path.getParentFile().mkdirs();
 			}
-			if(!path.getParentFile().canWrite()) {
+			if (!path.getParentFile().canWrite()) {
 				throw new AccessDeniedException(
 						String.format("Could not get write permissions for '%s'", path.getParentFile().getAbsolutePath()));
 			}
@@ -68,7 +65,7 @@ final class DefaultArchiveExtractor implements ArchiveExtractor {
 						ZipEntry entry = entries.nextElement();
 						final File destPath = new File(destinationDirectory + File.separator + entry.getName());
 						prepDestination(destPath, entry.isDirectory());
-						if(!entry.isDirectory()){
+						if (!entry.isDirectory()){
 							InputStream in = null;
 							OutputStream out = null;
 							try {
@@ -95,11 +92,13 @@ final class DefaultArchiveExtractor implements ArchiveExtractor {
 					TarArchiveEntry tarEntry = tarIn.getNextTarEntry();
 					while (tarEntry != null) {
 						// Create a file for this tarEntry
-						final File destPath = new File(destinationDirectory + File.separator + tarEntry.getName());
+                        String name = strip(tarEntry.getName());
+						final File destPath = new File(destinationDirectory + File.separator + name);
+
 						prepDestination(destPath, tarEntry.isDirectory());
 						if (!destPath.getCanonicalPath().startsWith(destinationDirectory)) {
 							throw new IOException(
-									"Expanding " + tarEntry.getName() + " would create file outside of " + destinationDirectory
+									"Expanding " + name + " would create file outside of " + destinationDirectory
 							);
 						}
 						if (!tarEntry.isDirectory()) {
@@ -128,4 +127,8 @@ final class DefaultArchiveExtractor implements ArchiveExtractor {
 					+ "'", e);
 		}
 	}
+
+    private String strip(String input) {
+        return input.replaceFirst("^[-\\w.]+/", "");
+    }
 }

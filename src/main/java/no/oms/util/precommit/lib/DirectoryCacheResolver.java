@@ -1,37 +1,30 @@
 package no.oms.util.precommit.lib;
 	
+import java.io.File;
 
-	import java.io.File;
-	
+public class DirectoryCacheResolver implements CacheResolver {
+  private final File cacheDirectory;
 
-	public class DirectoryCacheResolver implements CacheResolver {
-	
+  public DirectoryCacheResolver(File cacheDirectory) {
+                                                   this.cacheDirectory = cacheDirectory;
+                                                                                        }
 
-	  private final File cacheDirectory;
-	
+  @Override
+  public File resolve(CacheDescriptor cacheDescriptor) {
+    if (!cacheDirectory.exists()) {
+      cacheDirectory.mkdirs();
+    }
 
-	  public DirectoryCacheResolver(File cacheDirectory) {
-	    this.cacheDirectory = cacheDirectory;
-	  }
-	
+    StringBuilder filename = new StringBuilder()
+        .append(cacheDescriptor.getName())
+        .append("-")
+        .append(cacheDescriptor.getVersion());
 
-	  @Override
-	  public File resolve(CacheDescriptor cacheDescriptor) {
-	    if (!cacheDirectory.exists()) {
-	      cacheDirectory.mkdirs();
-	    }
-	
+    if (cacheDescriptor.getClassifier() != null) {
+      filename.append("-").append(cacheDescriptor.getClassifier());
+    }
 
-	    StringBuilder filename = new StringBuilder()
-	        .append(cacheDescriptor.getName())
-	        .append("-")
-	        .append(cacheDescriptor.getVersion());
-	    if (cacheDescriptor.getClassifier() != null) {
-	      filename.append("-").append(cacheDescriptor.getClassifier());
-	    }
-	    filename.append(".").append(cacheDescriptor.getExtension());
-	    return new File(cacheDirectory, filename.toString());
-	  }
-	
-
-	}
+    filename.append(".").append(cacheDescriptor.getExtension());
+    return new File(cacheDirectory, filename.toString());
+  }
+}

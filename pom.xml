@@ -10,9 +10,7 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
-    <name>pre-commit-maven-plugin Maven Plugin</name>
-
-    <!-- FIXME change it to the project's website -->
+    <name>pre-commit Maven Plugin</name>
     <url>https://www.github.com/oslomarketsolutions/pre-commit-maven-plugin</url>
 
     <prerequisites>

@@ -13,6 +13,7 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>no.oms.util.precommit</groupId>
         <artifactId>pre-commit-maven-plugin</artifactId>
         <configuration>
           <!-- Specify the MOJO parameters -->

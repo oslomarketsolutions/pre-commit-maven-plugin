@@ -10,8 +10,7 @@ import java.io.IOException;
 public class BinaryInstaller {
     public static final String INSTALL_PATH = "/pre-commit";
 
-    public static final String DEFAULT_DOWNLOAD_ROOT =
-            "https://github.com/yarnpkg/yarn/releases/download/";
+    public static final String DEFAULT_DOWNLOAD_ROOT = "https://github.com/pre-commit/pre-commit/archive/";
 
     private String version, downloadRoot;
 
@@ -33,12 +32,22 @@ public class BinaryInstaller {
         this.pythonHandle = pythonHandle;
     }
 
+    public BinaryInstaller setVersion(String version) {
+        this.version = version;
+        return this;
+    }
+
+    public BinaryInstaller setDownloadRoot(String downloadRoot) {
+        this.downloadRoot = downloadRoot;
+        return this;
+    }
+
     /*
-            python3 -m venv .pre-commit-env
-            . .pre-commit-env/bin/activate
-            tar -xzf pre-commit-1.10.1.tar.gz --strip-components 1
-            python setup.py install
-         */
+        python3 -m venv .pre-commit-env
+        . .pre-commit-env/bin/activate
+        tar -xzf pre-commit-1.10.1.tar.gz --strip-components 1
+        python setup.py install
+     */
     public void installBinary() throws InstallationException {
         try {
             logger.info("Installing pre-commit version {}", version);
@@ -63,28 +72,28 @@ public class BinaryInstaller {
                     FileUtils.deleteDirectory(installDirectory);
                 }
             } catch (IOException e) {
-                logger.warn("Failed to delete existing Yarn installation.");
+                logger.warn("Failed to delete existing installation.", e);
             }
 
             extractFile(archive, installDirectory);
 
-            File setupFile = new File(installDirectory + "setup.py");
-
+            File setupFile = new File(installDirectory + "/setup.py");
             if (!setupFile.exists()) {
                 throw new InstallationException("Could not find setup.py in extracted archive");
             }
 
-            VirtualEnv env = pythonHandle.setupVirtualEnv(installDirectory, "pre-commit-" + version);
+            VirtualEnvDescriptor env = pythonHandle.setupVirtualEnv(installDirectory, "pre-commit");
+
             //pythonHandle.activateVirtualenv();
             pythonHandle.installIntoVirtualEnv(env, setupFile);
 
             //ensureCorrectYarnRootDirectory(installDirectory, yarnVersion);
 
-            logger.info("Installed Yarn locally.");
+            logger.info("Installed pre-commit locally.");
         } catch (PythonException e) {
-            throw new InstallationException("Could not download Yarn", e);
+            throw new InstallationException("Could not download pre-commit", e);
         } catch (ArchiveExtractionException e) {
-            throw new InstallationException("Could not extract the Yarn archive", e);
+            throw new InstallationException("Could not extract the pre-commit archive", e);
         }
     }
 

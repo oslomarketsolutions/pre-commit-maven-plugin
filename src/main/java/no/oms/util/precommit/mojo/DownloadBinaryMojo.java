@@ -37,7 +37,10 @@ public class DownloadBinaryMojo extends AbstractPrecommitMojo {
     @Override
     public void execute(PluginFactory pluginFactory) throws MojoExecutionException {
         try {
-            pluginFactory.getBinaryInstaller().installBinary();
+            pluginFactory.getBinaryInstaller()
+                    .setDownloadRoot(downloadRoot)
+                    .setVersion(version)
+                    .installBinary();
         } catch (InstallationException e) {
             throw new MojoExecutionException("Failed to install binary", e);
         }

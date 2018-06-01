@@ -17,17 +17,17 @@ final class PythonException extends Exception {
 
 
 interface PythonHandle {
-    public VirtualEnv setupVirtualEnv(File directory, String envName) throws PythonException;
-    public void activateVirtualEnv(VirtualEnv env) throws PythonException;
-    public void installIntoVirtualEnv(VirtualEnv env, File setupFile) throws PythonException;
+    public VirtualEnvDescriptor setupVirtualEnv(File directory, String envName) throws PythonException;
+    public void activateVirtualEnv(VirtualEnvDescriptor env) throws PythonException;
+    public void installIntoVirtualEnv(VirtualEnvDescriptor env, File setupFile) throws PythonException;
 }
 
-final class VirtualEnv {
+final class VirtualEnvDescriptor {
     File directory;
     String name;
 
-    VirtualEnv(File directory, String name) {
-        this.directory = new File(directory + "/." + name);
+    VirtualEnvDescriptor(File directory, String name) {
+        this.directory = new File(directory + "/." + name + "-virtualenv");
         this.name = name;
     }
 }
@@ -36,10 +36,10 @@ final class DefaultPythonHandle implements PythonHandle {
     private static final Logger LOGGER = LoggerFactory.getLogger(PythonHandle.class);
 
     @Override
-    public VirtualEnv setupVirtualEnv(File directory, String envName) throws PythonException {
+    public VirtualEnvDescriptor setupVirtualEnv(File directory, String envName) throws PythonException {
         LOGGER.info("About to setup virtual env {}", envName);
 
-        VirtualEnv env = new VirtualEnv(directory, envName);
+        VirtualEnvDescriptor env = new VirtualEnvDescriptor(directory, envName);
         String[] command = new String[]{ "python", "-m", "venv", env.directory.getAbsolutePath() };
 
         try {
@@ -60,17 +60,21 @@ final class DefaultPythonHandle implements PythonHandle {
     }
 
     @Override
-    public void activateVirtualEnv(VirtualEnv env) throws PythonException {
+    public void activateVirtualEnv(VirtualEnvDescriptor env) throws PythonException {
         if (!env.directory.exists()) {
-            throw new PythonException("VirtualEnv " + env.name + " does not exist");
+            throw new PythonException("VirtualEnvDescriptor " + env.name + " does not exist");
         }
 
 
     }
 
     @Override
-    public void installIntoVirtualEnv(VirtualEnv env, File setupFile) throws PythonException {
+    public void installIntoVirtualEnv(VirtualEnvDescriptor env, File setupFile) throws PythonException {
         LOGGER.info("About to install binary into virtual env {}", env.name);
+
+        if (!env.directory.exists()) {
+            throw new PythonException("VirtualEnvDescriptor " + env.name + " does not exist");
+        }
 
         String[] command = new String[]{
                 env.directory.getAbsolutePath() + "/bin/python",
@@ -80,7 +84,7 @@ final class DefaultPythonHandle implements PythonHandle {
         String[] environment = new String[]{ "VIRTUAL_ENV=" + env.directory.getAbsolutePath() };
 
         try {
-            Process child = Runtime.getRuntime().exec(command, environment);
+            Process child = Runtime.getRuntime().exec(command, environment, setupFile.getParentFile());
             int result = child.waitFor();
             if (result != 0) {
                 throw new PythonException(
