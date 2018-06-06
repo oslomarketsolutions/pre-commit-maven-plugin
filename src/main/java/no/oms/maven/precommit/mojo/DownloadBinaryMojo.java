@@ -18,7 +18,7 @@ public class DownloadBinaryMojo extends AbstractPrecommitMojo {
     /**
      * Where to download binary from. Defaults to https://github.com/pre-commit/pre-commit/archive/...
      */
-    @Parameter(property = "downloadRoot", required = false, defaultValue = BinaryInstaller.DEFAULT_DOWNLOAD_ROOT)
+    @Parameter(property = "downloadRoot", defaultValue = BinaryInstaller.DEFAULT_DOWNLOAD_ROOT)
     private String downloadRoot;
 
     /**
