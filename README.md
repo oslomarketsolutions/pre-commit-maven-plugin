@@ -18,9 +18,7 @@ First, follow the [setup instructions][setup] on pre-commit.com. A
 `.pre-commit-config.yaml` file in the root of the project is required
 for the plugin to work.
 
-> NOTE: Not published to maven central yet!
-
-Add the following to your `pom.xml`:
+Add the following to your `pom.xml` under build plugins:
 
 ```xml
 <plugin>
@@ -31,6 +29,14 @@ Add the following to your `pom.xml`:
         <!-- The version of pre-commit you would like to use -->
         <version>v1.10.1</version>
     </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>download-binary</goal>
+                <goal>generate-hooks</goal>
+            </goals>
+        </execution>
+    </executions>
 </plugin>
 ```
 
