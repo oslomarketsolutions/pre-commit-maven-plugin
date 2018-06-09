@@ -81,6 +81,15 @@ that they can be executed when generating the Git hooks.
 
 You probably want to add this directory to your gitignore.
 
+## FAQ
+### Hooks are outdated
+
+If you use `rev: master` or something similar, you may encounter situations
+where `pre-commit` does not want to run the correct version of the hooks because
+it has cached an earlier version.
+
+To fix this, try deleting the cache directory at `~/.cache/pre-commit/`.
+
 ## Developing
 
 ### Releasing new versions
