@@ -20,7 +20,7 @@ final class PythonException extends Exception {
 interface PythonHandle {
     VirtualEnvDescriptor setupVirtualEnv(File directory, String envName) throws PythonException;
     void installIntoVirtualEnv(VirtualEnvDescriptor env, File setupFile) throws PythonException;
-    void installGitHooks(VirtualEnvDescriptor env) throws PythonException;
+    void installGitHooks(VirtualEnvDescriptor env, HookType[] hookTypes) throws PythonException;
 }
 
 final class VirtualEnvDescriptor {
@@ -88,14 +88,17 @@ final class DefaultPythonHandle implements PythonHandle {
 
         try {
             Process child = Runtime.getRuntime().exec(command, environment, setupFile.getParentFile());
+
+            // Write messages to output
+            BackgroundStreamLogger errorGobbler = new BackgroundStreamLogger(child.getErrorStream(), "ERROR");
+            BackgroundStreamLogger outputGobbler = new BackgroundStreamLogger(child.getInputStream(), "DEBUG");
+            errorGobbler.start();
+            outputGobbler.start();
+
             int result = child.waitFor();
-            String stdout = IOUtils.toString(child.getInputStream());
 
             if (result != 0) {
-                throw new PythonException(
-                        "Failed to install into virtual env " + env.name + ". return code " + result +
-                                "\nPython said: " + stdout
-                );
+                throw new PythonException("Failed to install into virtual env " + env.name + ". return code " + result);
             }
         } catch (IOException e) {
             throw new PythonException("Failed to execute python", e);
@@ -107,40 +110,55 @@ final class DefaultPythonHandle implements PythonHandle {
     }
 
     @Override
-    public void installGitHooks(VirtualEnvDescriptor env) throws PythonException {
+    public void installGitHooks(VirtualEnvDescriptor env, HookType[] hookTypes) throws PythonException {
         LOGGER.info("About to install commit hooks into virtual env {}", env.name);
 
         if (!env.directory.exists()) {
             throw new PythonException("Virtual env " + env.name + " does not exist");
         }
 
-        String[] command = new String[]{
-                env.directory.getAbsolutePath() + "/bin/pre-commit",
-                "install",
-                "--install-hooks"
-        };
-        String[] environment = new String[]{
-                "VIRTUAL_ENV=" + env.directory.getAbsolutePath(),
-                // PATH is not inherited when we explicitly set environment.
-                // Set it to retain access to the git binary
-                "PATH=" + System.getenv("PATH")
-        };
-        LOGGER.debug("Running {} {}", environment, command);
+        if (hookTypes == null || hookTypes.length == 0) {
+            throw new PythonException("Providing the hook types to install are required");
+        }
 
-        try {
-            Process child = Runtime.getRuntime().exec(command, environment);
-            int result = child.waitFor();
-            String stdout = IOUtils.toString(child.getInputStream());
+        // There is seemingly no way to install all hooks at once
+        // Thus we run pre-commit as many times as necessary
+        for (HookType type : hookTypes) {
+            String[] command = new String[]{
+                    env.directory.getAbsolutePath() + "/bin/pre-commit",
+                    "install",
+                    "--install-hooks",
+                    "--overwrite",
+                    "--hook-type",
+                    type.getValue()
+            };
+            String[] environment = new String[]{
+                    "VIRTUAL_ENV=" + env.directory.getAbsolutePath(),
+                    // PATH is not inherited when we explicitly set environment.
+                    // Set it to retain access to the git binary
+                    "PATH=" + System.getenv("PATH")
+            };
+            LOGGER.debug("Running {} {}", environment, command);
 
-            if (result != 0) {
-                throw new PythonException(
-                        "Failed to install git hooks. return code " + result + "\nPre-commit said: " + stdout
-                );
+            try {
+                Process child = Runtime.getRuntime().exec(command, environment);
+
+                // Write messages to output
+                BackgroundStreamLogger errorGobbler = new BackgroundStreamLogger(child.getErrorStream(), "ERROR");
+                BackgroundStreamLogger outputGobbler = new BackgroundStreamLogger(child.getInputStream(), "INFO");
+                errorGobbler.start();
+                outputGobbler.start();
+
+                int result = child.waitFor();
+
+                if (result != 0) {
+                    throw new PythonException("Failed to install git hooks. return code " + result);
+                }
+            } catch (IOException e) {
+                throw new PythonException("Failed to execute python", e);
+            } catch (InterruptedException e) {
+                throw new PythonException("Unexpected interruption of while waiting for the pre-commit binary", e);
             }
-        } catch (IOException e) {
-            throw new PythonException("Failed to execute python", e);
-        } catch (InterruptedException e) {
-            throw new PythonException("Unexpected interruption of while waiting for the pre-commit binary", e);
         }
 
         LOGGER.info("Successfully installed Git commit hooks");
