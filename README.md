@@ -25,6 +25,7 @@ Add the following to your `pom.xml` under build plugins:
     <groupId>no.oms.maven</groupId>
     <artifactId>pre-commit-maven-plugin</artifactId>
     <version>LATEST_VERSION</version>
+    <inherited>false</inherited>
     <configuration>
         <!-- The version of pre-commit you would like to use -->
         <version>v1.10.1</version>
@@ -43,6 +44,20 @@ Add the following to your `pom.xml` under build plugins:
 Remember to replace `LATEST_VERSION` with the version of the plugin you
 would like to use, i.e. [the latest version][releases]. This will
 register the plugin
+
+### Other hook types
+
+If you're using other types of hooks than just precommit hooks, then you need to
+pass an argument specifying which hooks you would like the plugin to install.
+This is done by setting the `hookTypes` argument:
+
+```xml
+<hookTypes>
+    <hookType>preCommit</hookType>
+    <hookType>prePush</hookType>
+    <hookType>commitMsg</hookType>
+</hookTypes>
+```
 
 ### Options
 
@@ -66,6 +81,23 @@ that they can be executed when generating the Git hooks.
 
 You probably want to add this directory to your gitignore.
 
+## Developing
+
+### Releasing new versions
+Ensure you have access to [OSSRH][ossrh] and that your `~/.m2/settings.xml`
+includes the following
+
+```
+<server>
+  <id>ossrh</id>
+  <username>your_ossrh_username</username>
+  <password>your_ossrh_password</password>
+</server>
+```
+
+Run `mvn clean deploy -P release`
+
 [precommit]: https://pre-commit.com
 [setup]: https://pre-commit.com/#plugins
 [releases]: https://github.com/oslomarketsolutions.com/pre-commit-maven-plugin/releases
+[ossrh]: https://central.sonatype.org
