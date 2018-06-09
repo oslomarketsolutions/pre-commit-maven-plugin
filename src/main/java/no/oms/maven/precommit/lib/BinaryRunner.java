@@ -17,13 +17,13 @@ public class BinaryRunner {
         this.pythonHandle = pythonHandle;
     }
 
-    public void installHooks() throws InstallationException {
+    public void installHooks(HookType[] hookTypes) throws InstallationException {
         try {
             logger.info("Installing git commit hooks");
             File installDirectory = getInstallDirectory();
 
             VirtualEnvDescriptor env = pythonHandle.setupVirtualEnv(installDirectory, "pre-commit");
-            pythonHandle.installGitHooks(env);
+            pythonHandle.installGitHooks(env, hookTypes);
 
             logger.info("Installed Git commit hooks");
         } catch (PythonException e) {

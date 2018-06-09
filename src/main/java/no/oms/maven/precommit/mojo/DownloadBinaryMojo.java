@@ -22,11 +22,11 @@ public class DownloadBinaryMojo extends AbstractPrecommitMojo {
     private String downloadRoot;
 
     /**
-     * The version of the pre-commit binary to install. IMPORTANT! Most version names start with 'v', for example
+     * The precommitVersion of the pre-commit binary to install. IMPORTANT! Most precommitVersion names start with 'v', for example
      * 'v1.10.1'
      */
-    @Parameter(property = "version", required = true)
-    private String version;
+    @Parameter(property = "precommitVersion", required = true)
+    private String precommitVersion;
 
     /**
      * Skips execution of this mojo.
@@ -39,7 +39,7 @@ public class DownloadBinaryMojo extends AbstractPrecommitMojo {
         try {
             pluginFactory.getBinaryInstaller()
                     .setDownloadRoot(downloadRoot)
-                    .setVersion(version)
+                    .setVersion(precommitVersion)
                     .installBinary();
         } catch (InstallationException e) {
             throw new MojoExecutionException("Failed to install binary", e);
