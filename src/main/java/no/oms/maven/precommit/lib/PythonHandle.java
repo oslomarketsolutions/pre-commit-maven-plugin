@@ -47,7 +47,7 @@ final class DefaultPythonHandle implements PythonHandle {
             return env;
         }
 
-        String[] command = new String[]{ getPython3Path(), "-m", "venv", env.directory.getAbsolutePath() };
+        String[] command = new String[]{ getPython3Executable(), "-m", "venv", env.directory.getAbsolutePath() };
         LOGGER.debug("Running {}", (Object) command);
 
         try {
@@ -164,24 +164,24 @@ final class DefaultPythonHandle implements PythonHandle {
         LOGGER.info("Successfully installed Git commit hooks");
     }
 
-    private String getPython3Path() throws PythonException {
+    private String getPython3Executable() throws PythonException {
         Runtime runtime = Runtime.getRuntime();
 
         try {
-            Process proc = runtime.exec("python3 --version");
+            Process proc = runtime.exec(new String[]{"python3", "--version"});
             String output = IOUtils.toString(proc.getInputStream());
 
-            if (proc.exitValue() == 0 && checkVersion(output)) {
-                return output;
+            if (proc.waitFor() == 0 && checkVersion(output)) {
+                return "python3";
             }
 
-            proc = runtime.exec("python --version");
+            proc = runtime.exec(new String[]{"python", "--version"});
             output = IOUtils.toString(proc.getInputStream());
 
-            if (proc.exitValue() == 0 && checkVersion(output)) {
-                return output;
+            if (proc.waitFor() == 0 && checkVersion(output)) {
+                return "python";
             }
-        } catch (IOException exception) {
+        } catch (InterruptedException | IOException exception) {
             throw new PythonException("Exception when fetching python version from binary: ", exception);
         }
 
@@ -193,8 +193,8 @@ final class DefaultPythonHandle implements PythonHandle {
     private boolean checkVersion(String pythonOutput) throws PythonException {
         try {
             String versionString = pythonOutput.split(" ")[1];
-            int majorVersion = Integer.parseInt(versionString.split(".")[0]);
-            int minorVersion = Integer.parseInt(versionString.split(".")[1]);
+            int majorVersion = Integer.parseInt(versionString.split("\\.")[0]);
+            int minorVersion = Integer.parseInt(versionString.split("\\.")[1]);
 
             return majorVersion >= 3 && minorVersion >= 3;
         } catch (Exception exception) {
