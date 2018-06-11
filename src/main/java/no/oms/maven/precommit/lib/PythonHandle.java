@@ -47,7 +47,7 @@ final class DefaultPythonHandle implements PythonHandle {
             return env;
         }
 
-        String[] command = new String[]{ "python", "-m", "venv", env.directory.getAbsolutePath() };
+        String[] command = new String[]{ getPython3Path(), "-m", "venv", env.directory.getAbsolutePath() };
         LOGGER.debug("Running {}", (Object) command);
 
         try {
@@ -162,5 +162,43 @@ final class DefaultPythonHandle implements PythonHandle {
         }
 
         LOGGER.info("Successfully installed Git commit hooks");
+    }
+
+    private String getPython3Path() throws PythonException {
+        Runtime runtime = Runtime.getRuntime();
+
+        try {
+            Process proc = runtime.exec("python3 --version");
+            String output = IOUtils.toString(proc.getInputStream());
+
+            if (proc.exitValue() == 0 && checkVersion(output)) {
+                return output;
+            }
+
+            proc = runtime.exec("python --version");
+            output = IOUtils.toString(proc.getInputStream());
+
+            if (proc.exitValue() == 0 && checkVersion(output)) {
+                return output;
+            }
+        } catch (IOException exception) {
+            throw new PythonException("Exception when fetching python version from binary: ", exception);
+        }
+
+        throw new PythonException(
+                "Could not find a compatible python 3 version on your system. 3.3 is the minimum supported python version"
+        );
+    }
+
+    private boolean checkVersion(String pythonOutput) throws PythonException {
+        try {
+            String versionString = pythonOutput.split(" ")[1];
+            int majorVersion = Integer.parseInt(versionString.split(".")[0]);
+            int minorVersion = Integer.parseInt(versionString.split(".")[1]);
+
+            return majorVersion >= 3 && minorVersion >= 3;
+        } catch (Exception exception) {
+            throw new PythonException("Unexpected python version output: " + pythonOutput, exception);
+        }
     }
 }
