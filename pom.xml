@@ -7,7 +7,7 @@
 
     <groupId>no.oms.maven</groupId>
     <artifactId>pre-commit-maven-plugin</artifactId>
-    <version>0.2.0</version>
+    <version>0.3-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
     <name>pre-commit Maven Plugin</name>
