@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2018-06-11
+### Fixed
+- Made version checking smarter to support systems where `python` is a symlink
+  to python 2
+
 ## [0.2.0] - 2018-06-09
 ### Added
 - New argument `hookTypes` for installing multiple different hook types
