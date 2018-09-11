@@ -206,29 +206,31 @@ final class DefaultPythonHandle implements PythonHandle {
     }
 
     private String getPython3Executable() throws PythonException {
+        if (binaryExists("python3")) return "python3";
+        if (binaryExists("python")) return "python";
+
+        throw new PythonException(
+                "Could not find a compatible python 3 version on your system. 3.3 is the minimum supported python version. " +
+                "Please check you have a compatible 'python' or 'python3' executable on your PATH"
+        );
+    }
+
+    private boolean binaryExists(String binaryName) {
         Runtime runtime = Runtime.getRuntime();
 
         try {
-            Process proc = runtime.exec(new String[]{"python3", "--version"});
+            Process proc = runtime.exec(new String[]{binaryName, "--version"});
             String output = IOUtils.toString(proc.getInputStream());
 
             if (proc.waitFor() == 0 && checkVersion(output)) {
-                return "python3";
+                LOGGER.debug("Located python binary `{}`", binaryName);
+                return true;
             }
-
-            proc = runtime.exec(new String[]{"python", "--version"});
-            output = IOUtils.toString(proc.getInputStream());
-
-            if (proc.waitFor() == 0 && checkVersion(output)) {
-                return "python";
-            }
-        } catch (InterruptedException | IOException exception) {
-            throw new PythonException("Exception when fetching python version from binary: ", exception);
+        } catch (Exception ignored) {
         }
 
-        throw new PythonException(
-                "Could not find a compatible python 3 version on your system. 3.3 is the minimum supported python version"
-        );
+        LOGGER.debug("Did not locate a python binary called `{}`", binaryName);
+        return false;
     }
 
     private boolean checkVersion(String pythonOutput) throws PythonException {
