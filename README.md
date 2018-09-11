@@ -28,7 +28,7 @@ Add the following to your `pom.xml` under build plugins:
     <inherited>false</inherited>
     <configuration>
         <!-- The version of pre-commit you would like to use -->
-        <version>v1.10.1</version>
+        <precommitVersion>v1.10.1</precommitVersion>
     </configuration>
     <executions>
         <execution>
