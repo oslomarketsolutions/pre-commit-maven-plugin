@@ -108,5 +108,5 @@ Run `mvn clean deploy -P release`
 
 [precommit]: https://pre-commit.com
 [setup]: https://pre-commit.com/#plugins
-[releases]: https://github.com/oslomarketsolutions.com/pre-commit-maven-plugin/releases
+[releases]: https://github.com/oslomarketsolutions/pre-commit-maven-plugin/releases
 [ossrh]: https://central.sonatype.org
